@@ -75,7 +75,9 @@ return packer.startup(function(use)
     requires = {
       'kyazdani42/nvim-web-devicons', -- optional, for file icon
     },
-}
+  }
+
+  use "lewis6991/impatient.nvim"
 
   -- Automatically set up your configuration after cloning packer.nvim
   -- Put this at the end after all plugins
