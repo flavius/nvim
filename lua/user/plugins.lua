@@ -42,6 +42,7 @@ return packer.startup(function(use)
   use "wbthomason/packer.nvim" -- Have packer manage itself
 
   -- Colorschemes
+  use "xiyaowong/nvim-whitespace"
   -- use "lunarvim/colorschemes" -- A bunch of colorschemes you can try out
   use "lunarvim/darkplus.nvim"
 
