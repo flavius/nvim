@@ -11,10 +11,23 @@ through all the following contents.
 You are currently looking at the master branch, which doesn't have any
 configuration in it.
 
-The setups are in different branches, one branch per configuration. This might
+As a neovim user, you might work on different projects, with different stacks,
+languages or systems. The goal of this project is to allow you to use neovim in
+specific situations called profiles. More precisely:
+
+* separate setups
+* allow combining profiles by leveraging git
+* foster a community of changes and ideas
+
+There is no perfect universal setup for everyone, since every one of us has
+specific needs, at any given point in time. The goal is to create a framework
+of exchanging and combining bits and pieces from different users by creating an
+ecosystem of configurations.
+
+The profiles are in different branches, one branch per configuration. This might
 raise some eye brows, but I'll explain, bear with me.
 
-At the top is the branch `minimal`. This contains the most minimalistic setup
+At the top is the branch `minimal`. This contains the most minimalistic profile
 which I consider modern (and stable). You might think differently, in that
 case, fork this project and make your adaptations in your own fork. If you
 think the community at large will benefit from it, then also open a PR against
@@ -33,7 +46,7 @@ clearly documented. A new intent (or a target audience) requires a new name.
 If an intent is a refinement of an existing intent, then the name of the branch
 should be prefixed with `previous-intent-`.
 
-There are two main ways to use and manage this setup.
+There are two main ways to use and manage this profile.
 
 1. Based on the `NVIM_APPNAME` environment variable
 2. By merging multiple branches
