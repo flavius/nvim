@@ -17,4 +17,4 @@ vim.opt.termguicolors = true         -- True color support
 
 -- Leader Key
 vim.g.mapleader = " "                -- Set leader key to Space
-vim.g.maplocalleader = ","          -- Set leader key to Comma
+vim.g.maplocalleader = ","           -- Set local leader to Comma
