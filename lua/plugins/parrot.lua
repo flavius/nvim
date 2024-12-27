@@ -15,8 +15,6 @@ return {
           function interp(s, tab)
               return (s:gsub('($%b{})', function(w) return tab[w:sub(3, -2)] or w end))
           end
-          -- TODO: how to call the function iso8601?
-
           parrot.setup({
               providers = {
                   anthropic = {
@@ -69,56 +67,46 @@ return {
                     local model_obj = prt.get_model "command"
                     prt.Prompt(params, prt.ui.Target.append, model_obj, nil, template)
                   end,
-                  -- TODO: you are an expert in prompt engineering and your task is to rewrite the template according to best practices.
                   Pair = function(prt, params)
                       local current_time = iso8601(os.time() + (os.clock() % 1))
                       local template = [[
-                      You are an expert AI pair programmer focused on code improvement and collaboration. Your role adapts based on the context:
+                      System: You are an adaptive AI pair programmer capable of understanding development needs from context.
                   
-                      ROLE DEFINITION:
-                      1. Active Contributor (when TODO contains: write/implement/fix/refactor/change/rewrite)
-                         - Implement new code solutions
-                         - Refactor existing code to meet specifications
-                         - Fix identified issues
-                         - Maintain consistent code style and patterns
+                      Context:
+                      - File: {{filename}}
+                      - Language: {{filetype}}
+                      - Current Time: ${current_time}
                   
-                      2. Code Reviewer (when TODO asks for explanation/clarification)
-                         - Provide detailed code comments
-                         - Explain implementation decisions
-                         - Clarify complex logic
-                         - Document edge cases
-                  
-                      CONTEXT AWARENESS:
-                      - Focus on the specific code selection
-                      - Consider the entire codebase for consistency
-                      - Respect existing patterns and conventions
-                  
-                      SELECTION CONTEXT:
+                      Task Scope:
                       ```{{filetype}}
                       {{selection}}
                       ```
                   
-                      FILE LOCATION: {{filename}}
-                  
-                      FULL CODEBASE CONTEXT:
+                      Full context:
                       ```{{filetype}}
                       {{multifilecontent}}
                       ```
                   
-                      RESPONSE FORMAT:
-                      Active Role: 
-                      - Clean code only, no formatting markers
-                      - Start with: "-- BEGIN <ISO8601_TIMESTAMP>"
-                      - End with: "-- END <ISO8601_TIMESTAMP>"
+                      Primary Objective:
+                      Analyze the TODO comment and overall context to determine whether this is:
+                      1. An implementation task - requiring code changes, improvements, or new features
+                      2. A review task - requiring explanation, documentation, or analysis
                   
-                      Passive Role:
-                      - Comments only, no code changes
-                      - Focus on clarity and completeness
+                      Consider:
+                      - The intent and desired outcome described in the TODO
+                      - The surrounding code context and patterns
+                      - Best practices for the specific language and codebase
 
-                      Further considerations:
+                      Your response should adapt naturally to the task's nature:
+                      For implementation tasks:
+                        - Provide clean, well-structured code
+                        - Start with: "-- BEGIN <ISO8601_TIMESTAMP> [optional_context]"
+                        - End with: "-- END <ISO8601_TIMESTAMP>"
 
-                      - current time is: ${current_time}
-                      - do not state in your response whether you act as passive or active
+                      For review tasks:
+                        - Provide clear, detailed technical commentary
+                        - Focus on explaining the implementation's rationale
+                        - Document important considerations and edge cases
                       ]]
                       template = interp(template, {current_time = current_time})
                       local model_obj = prt.get_model "command"
@@ -129,4 +117,3 @@ return {
       end
     },
 }
-
