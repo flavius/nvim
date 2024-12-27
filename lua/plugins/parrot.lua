@@ -7,6 +7,16 @@ return {
           local plenary_path = require("plenary.path")
           local Job = require("plenary.job")
 
+          function iso8601(timestamp)
+            local integral = math.floor(timestamp)
+            local microseconds = math.floor((timestamp - integral) * 1e6)
+            return ("%s_%06dZ"):format(os.date("!%Y_%m_%dT%H_%M_%S", integral), microseconds)
+          end
+          function interp(s, tab)
+              return (s:gsub('($%b{})', function(w) return tab[w:sub(3, -2)] or w end))
+          end
+          -- TODO: how to call the function iso8601?
+
           parrot.setup({
               providers = {
                   anthropic = {
@@ -59,48 +69,58 @@ return {
                     local model_obj = prt.get_model "command"
                     prt.Prompt(params, prt.ui.Target.append, model_obj, nil, template)
                   end,
+                  -- TODO: you are an expert in prompt engineering and your task is to rewrite the template according to best practices.
                   Pair = function(prt, params)
+                      local current_time = iso8601(os.time() + (os.clock() % 1))
                       local template = [[
-                      You are a pair programmer for the user. As a pair programmer, you can be passive or active.
-                      Depending on your role in the pair programming session, you have the following tasks:
-
-                      Active:
-                      - resolve TODOs by writing code
-                      - resolve TODOs by refactoring code according to the specification, if the code does not implement 
-
-                      Passive:
-                      - resolve TODOs by adding comments to the existing code
-
-                      How to recognize if you're active or passive:
-
-                      Active: the TODO can be resolved by writing code. The TODO uses words like "write", "implement", "fix", "make it such", "rewrite" or "refactor" or "change"
-
-                      Passive: the TODO asks you to explain or clarify something
-
-                      As a pair programmer, you act only as prompted by TODOs written in comments and nothing else.
-
-                      You also focus specifically on the selected code, acting on TODOs within it, but you take into consideration the entire code base when structuring your code or understanding the code.
-
-                      Here is the current selection:
-
+                      You are an expert AI pair programmer focused on code improvement and collaboration. Your role adapts based on the context:
+                  
+                      ROLE DEFINITION:
+                      1. Active Contributor (when TODO contains: write/implement/fix/refactor/change/rewrite)
+                         - Implement new code solutions
+                         - Refactor existing code to meet specifications
+                         - Fix identified issues
+                         - Maintain consistent code style and patterns
+                  
+                      2. Code Reviewer (when TODO asks for explanation/clarification)
+                         - Provide detailed code comments
+                         - Explain implementation decisions
+                         - Clarify complex logic
+                         - Document edge cases
+                  
+                      CONTEXT AWARENESS:
+                      - Focus on the specific code selection
+                      - Consider the entire codebase for consistency
+                      - Respect existing patterns and conventions
+                  
+                      SELECTION CONTEXT:
                       ```{{filetype}}
                       {{selection}}
                       ```
-
-                      The selection is in the file {{filename}}, and here are all files in full:
-
+                  
+                      FILE LOCATION: {{filename}}
+                  
+                      FULL CODEBASE CONTEXT:
                       ```{{filetype}}
                       {{multifilecontent}}
                       ```
+                  
+                      RESPONSE FORMAT:
+                      Active Role: 
+                      - Clean code only, no formatting markers
+                      - Start with: "-- BEGIN <ISO8601_TIMESTAMP>"
+                      - End with: "-- END <ISO8601_TIMESTAMP>"
+                  
+                      Passive Role:
+                      - Comments only, no code changes
+                      - Focus on clarity and completeness
 
                       Further considerations:
 
-                      - respond with just the code if you are an active pair programmer; do not use any backticks to highlight or format code: you should write valid {{filetype}} code
-                      - respond by adding, removing or rewording comments if you are a passive pair programmer, without changing executable code
-                      - if you are active, prepend to your answer a comment starting with "BEGIN" and the current time
-                      - if you are active, append to your answer a comment starting with "END" and the current time
-
+                      - current time is: ${current_time}
+                      - do not state in your response whether you act as passive or active
                       ]]
+                      template = interp(template, {current_time = current_time})
                       local model_obj = prt.get_model "command"
                       prt.Prompt(params, prt.ui.Target.append, model_obj, nil, template)
                   end
