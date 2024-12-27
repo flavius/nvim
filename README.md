@@ -1,3 +1,3 @@
-Dependencies:
 
 * ArchLinux: `fzf`
+* ArchLinux: `pyright`

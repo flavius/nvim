@@ -23,4 +23,5 @@ return {
     end },
 
     { import = "plugins.parrot" },
+    { import = "plugins.python" },
 }
