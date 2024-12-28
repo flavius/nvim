@@ -18,3 +18,5 @@ vim.opt.termguicolors = true         -- True color support
 -- Leader Key
 vim.g.mapleader = " "                -- Set leader key to Space
 vim.g.maplocalleader = ","           -- Set local leader to Comma
+
+vim.opt.clipboard = "unnamedplus"
